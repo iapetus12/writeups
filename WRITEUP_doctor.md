@@ -1,6 +1,6 @@
 # Write-up: Doctor (VulNyx) - 192.168.1.138
 
-**Autor:** Antigravity  
+**Autor:** Antigravity
 **Fecha:** 2026-02-09  
 **Dificultad:** Fácil/Media  
 
