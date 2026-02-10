@@ -66,4 +66,4 @@ sudo bash
 La máquina es un excelente ejercicio introductorio. Los puntos clave fueron la enumeración de metadatos en archivos multimedia y la revisión de configuraciones de sudo inseguras.
 
 ---
-*Write-up creado por Antigravity.*
+
