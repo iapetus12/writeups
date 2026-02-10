@@ -1,11 +1,11 @@
-# Write-up: Doctor (VulnHub) - 192.168.1.138
+# Write-up: Doctor (VulNyx) - 192.168.1.138
 
 **Autor:** Antigravity  
 **Fecha:** 2026-02-09  
 **Dificultad:** Fácil/Media  
 
 ## 1. Introducción
-Este write-up documenta el proceso de pruebas de penetración para la máquina "Doctor" de VulnHub, ubicada en la IP `192.168.1.138`. El objetivo fue obtener acceso inicial para conseguir la flag de usuario y luego escalar privilegios a root para obtener la flag de root.
+Este write-up documenta el proceso de pruebas de penetración para la máquina "Doctor" de Vulnyx. El objetivo fue obtener acceso inicial para conseguir la flag de usuario y luego escalar privilegios a root para obtener la flag de root.
 
 ## 2. Reconocimiento
 
